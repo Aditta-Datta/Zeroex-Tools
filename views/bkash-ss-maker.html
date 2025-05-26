@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>bKash Fake SS Maker - Zeroex Tools</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      background: #0d0d0d;
+      overflow-x: hidden;
+    }
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      gap: 20px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px #00ffff;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .input-group label {
+      font-size: 16px;
+    }
+    .input-group input, .input-group button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .input-group input {
+      width: 100%;
+    }
+    .input-group button {
+      background: rgba(0, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .input-group button:hover:not(:disabled) {
+      background: rgba(0, 255, 255, 0.4);
+      transform: translateY(-2px);
+    }
+    .input-group button:disabled {
+      background: rgba(255, 255, 255, 0.05);
+      cursor: not-allowed;
+    }
+    #saveButton {
+      display: none; /* Hide Save Image button initially */
+    }
+    canvas {
+      max-width: 100%;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      margin-top: 20px;
+      display: none; /* Hide canvas until image is generated */
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="container">
+    <h1>bKash Fake SS Maker</h1>
+    <div class="input-group">
+      <label for="mobile">Mobile Number (11 digits, e.g., 01XXXXXXXXX):</label>
+      <input type="text" id="mobile" placeholder="01XXXXXXXXX" maxlength="11" pattern="[0][0-9]{10}" required oninput="checkInputs()">
+      <label for="amount">Send Money Amount (Max 50,000):</label>
+      <input type="number" id="amount" placeholder="Enter amount" max="50000" min="1" required oninput="checkInputs()">
+      <label for="time">Time (Leave blank for current time):</label>
+      <input type="datetime-local" id="time">
+      <button id="generateButton" onclick="generateImage()" disabled>Generate Image</button>
+      <button id="saveButton" onclick="saveImage()">Save Image</button>
+    </div>
+    <canvas id="canvas"></canvas>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 80 },
+        color: { value: "#00ffff" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5 },
+        size: { value: 3 },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#00ffff",
+          opacity: 0.4,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: "none",
+          out_mode: "out"
+        }
+      },
+      interactivity: {
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" }
+        },
+        modes: {
+          repulse: { distance: 100 },
+          push: { particles_nb: 4 }
+        }
+      },
+      retina_detect: true
+    });
+
+    function checkInputs() {
+      const mobile = document.getElementById('mobile').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const generateButton = document.getElementById('generateButton');
+      generateButton.disabled = !(mobile && amount);
+    }
+  </script>
+  <script src="/script.js"></script>
+</body>
+</html>
