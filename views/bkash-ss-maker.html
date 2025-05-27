@@ -44,7 +44,7 @@
     .input-group label {
       font-size: 16px;
     }
-    .input-group input, .input-group button {
+    .input-group input, .input-group select, .input-group button {
       padding: 10px;
       font-size: 16px;
       border: none;
@@ -52,7 +52,7 @@
       background: rgba(255, 255, 255, 0.1);
       color: white;
     }
-    .input-group input {
+    .input-group input, .input-group select {
       width: 100%;
     }
     .input-group button {
@@ -69,13 +69,19 @@
       cursor: not-allowed;
     }
     #saveButton {
-      display: none; /* Hide Save Image button initially */
+      display: none;
     }
     canvas {
       max-width: 100%;
       border: 1px solid rgba(0, 255, 255, 0.3);
       margin-top: 20px;
-      display: none; /* Hide canvas until image is generated */
+      display: none;
+    }
+    .form-section {
+      display: none;
+    }
+    .form-section.active {
+      display: flex;
     }
   </style>
 </head>
@@ -83,13 +89,33 @@
   <div id="particles-js"></div>
   <div class="container">
     <h1>bKash Fake SS Maker</h1>
+    <div style="color: #ff5555; text-align: center; margin: 10px;">Warning: This tool is for entertainment purposes only. Misuse may lead to legal consequences.</div>
     <div class="input-group">
+      <label for="mode">Select Mode:</label>
+      <select id="mode" onchange="toggleForm(event)">
+        <option value="send-money">bKash Send Money</option>
+        <option value="account-money">bKash Account Money</option>
+      </select>
+    </div>
+    <div id="send-money-form" class="input-group form-section">
       <label for="mobile">Mobile Number (11 digits, e.g., 01XXXXXXXXX):</label>
       <input type="text" id="mobile" placeholder="01XXXXXXXXX" maxlength="11" pattern="[0][0-9]{10}" required oninput="checkInputs()">
       <label for="amount">Send Money Amount (Max 50,000):</label>
       <input type="number" id="amount" placeholder="Enter amount" max="50000" min="1" required oninput="checkInputs()">
       <label for="time">Time (Leave blank for current time):</label>
       <input type="datetime-local" id="time">
+    </div>
+    <div id="account-money-form" class="input-group form-section">
+      <label for="account-name">Account Name (English only):</label>
+      <input type="text" id="account-name" placeholder="Aditta Datta" required oninput="checkInputs()">
+      <label for="balance">Account Balance (0 to 5,000,000):</label>
+      <input type="number" id="balance" placeholder="Enter balance" max="5000000" min="0" required oninput="checkInputs()">
+      <label for="account-time">Time (Leave blank for current time):</label>
+      <input type="datetime-local" id="account-time">
+      <label for="account-image">Profile Image (Optional):</label>
+      <input type="file" id="account-image" accept="image/*">
+    </div>
+    <div class="input-group">
       <button id="generateButton" onclick="generateImage()" disabled>Generate Image</button>
       <button id="saveButton" onclick="saveImage()">Save Image</button>
     </div>
@@ -131,12 +157,42 @@
       retina_detect: true
     });
 
-    function checkInputs() {
-      const mobile = document.getElementById('mobile').value.trim();
-      const amount = document.getElementById('amount').value.trim();
-      const generateButton = document.getElementById('generateButton');
-      generateButton.disabled = !(mobile && amount);
+    function toggleForm(event) {
+      event.preventDefault();
+      const mode = document.getElementById('mode').value;
+      document.getElementById('send-money-form').classList.toggle('active', mode === 'send-money');
+      document.getElementById('account-money-form').classList.toggle('active', mode === 'account-money');
+
+      // Reset canvas and overlays
+      const canvas = document.getElementById('canvas');
+      const saveButton = document.getElementById('saveButton');
+      canvas.style.display = 'none';
+      saveButton.style.display = 'none';
+      if (window.redrawCanvas) {
+        window.texts = []; // Reset texts array
+        window.overlayImage = null; // Reset overlay image
+        window.redrawCanvas(); // Redraw empty canvas
+      }
+      checkInputs();
     }
+
+    function checkInputs() {
+      const mode = document.getElementById('mode').value;
+      const generateButton = document.getElementById('generateButton');
+      if (mode === 'send-money') {
+        const mobile = document.getElementById('mobile').value.trim();
+        const amount = document.getElementById('amount').value.trim();
+        generateButton.disabled = !(mobile && amount);
+      } else {
+        const accountName = document.getElementById('account-name').value.trim();
+        const balance = document.getElementById('balance').value.trim();
+        generateButton.disabled = !(accountName && balance);
+      }
+    }
+
+    // Initialize form based on mode
+    document.getElementById('mode').value = 'send-money';
+    toggleForm(new Event('change'));
   </script>
   <script src="/script.js"></script>
 </body>
