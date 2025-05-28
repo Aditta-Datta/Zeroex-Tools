@@ -191,6 +191,20 @@
             }
             chatBox.insertBefore(messageDiv, chatBox.firstChild);
         }
+
+        async function fetchWithTimeout(url, options, timeout = 5000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            } catch (error) {
+                clearTimeout(id);
+                throw error;
+            }
+        }
+
         async function sendMessage() {
             const userInput = document.getElementById("user-input");
             const message = userInput.value.trim();
@@ -198,12 +212,16 @@
             appendMessage(message, "user-message");
             userInput.value = "";
             try {
-                const response = await fetch(`https://zeroex-chatbot-api.onrender.com/get_response?input=${encodeURIComponent(message)}&threshold=0&random=true`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+                const response = await fetchWithTimeout(
+                    `https://zeroex-chatbot-api.onrender.com/get_response?input=${encodeURIComponent(message)}&threshold=0&random=true`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    },
+                    5000 // 5-second timeout
+                );
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -215,9 +233,16 @@
                 }
             } catch (error) {
                 console.error("Error fetching response:", error);
-                appendMessage(`Error connecting to the bot: ${error.message}`, "bot-message");
+                let errorMessage = "Error connecting to the bot.";
+                if (error.name === 'AbortError') {
+                    errorMessage = "Request timed out. Please try again.";
+                } else if (error.message.includes("Failed to fetch")) {
+                    errorMessage = "Unable to reach the server. Check your connection or API availability.";
+                }
+                appendMessage(errorMessage, "bot-message");
             }
         }
+
         function openFacebook() { window.open("https://www.facebook.com/profile.php?id=61550041252629", "_blank"); }
         function openAdiFacebook() { window.open("https://www.facebook.com/Adi.0X", "_blank"); }
     </script>
