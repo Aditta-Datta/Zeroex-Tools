@@ -198,9 +198,9 @@
             appendMessage(message, "user-message");
             userInput.value = "";
             try {
-                const response = await fetch(`https://zerox-chat-bot-api.onrender.com/chat?message=${encodeURIComponent(message)}`);
+                const response = await fetch(`https://zeroex-chatbot-api.onrender.com/get_response?input=${encodeURIComponent(message)}&threshold=30&random=true`);
                 const data = await response.json();
-                appendMessage(data.reply || "Sorry, I couldn't understand that.", "bot-message");
+                appendMessage(data.outputs || "Sorry, I couldn't understand that.", "bot-message");
             } catch (error) {
                 appendMessage("Error connecting to the bot.", "bot-message");
             }
