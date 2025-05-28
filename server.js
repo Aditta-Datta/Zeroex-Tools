@@ -40,8 +40,8 @@ app.get("/fake-ss-maker/bkash", (req, res) => res.sendFile(path.join(__dirname, 
 app.get("/chatbot/api", async (req, res) => {
   try {
     const { message } = req.query;
-    const response = await axios.get(`https://zerox-chat-bot-api.onrender.com/chat?message=${encodeURIComponent(message)}`);
-    res.json(response.data);
+    const response = await axios.get(`https://zeroex-chatbot-api.onrender.com/get_response?input=${encodeURIComponent(message)}&threshold=30&random=true`);
+    res.json({ outputs: response.data.outputs });
   } catch (error) {
     res.status(500).json({ error: "Chatbot API error" });
   }
