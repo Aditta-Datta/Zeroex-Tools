@@ -40,9 +40,13 @@ app.get("/fake-ss-maker/bkash", (req, res) => res.sendFile(path.join(__dirname, 
 app.get("/chatbot/api", async (req, res) => {
   try {
     const { message } = req.query;
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
     const response = await axios.get(`https://zeroex-chatbot-api.onrender.com/get_response?input=${encodeURIComponent(message)}&threshold=30&random=true`);
     res.json({ outputs: response.data.outputs });
   } catch (error) {
+    console.error("Chatbot API error:", error.message);
     res.status(500).json({ error: "Chatbot API error" });
   }
 });
